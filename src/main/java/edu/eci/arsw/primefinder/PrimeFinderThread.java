@@ -9,17 +9,20 @@ public class PrimeFinderThread extends Thread{
 	int a,b;
 	
 	private List<Integer> primes;
+    private Control controlMonitor;
 	
-	public PrimeFinderThread(int a, int b) {
+	public PrimeFinderThread(int a, int b, Control controlMonitor) {
 		super();
                 this.primes = new LinkedList<>();
 		this.a = a;
 		this.b = b;
+        this.controlMonitor = controlMonitor;
 	}
 
         @Override
 	public void run(){
-            for (int i= a;i < b;i++){						
+            for (int i= a;i < b;i++){
+                controlMonitor.checkPaused();
                 if (isPrime(i)){
                     primes.add(i);
                     System.out.println(i);
