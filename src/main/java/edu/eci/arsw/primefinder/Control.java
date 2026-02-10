@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.eci.arsw.primefinder;
 
 import java.util.Scanner;
 
-/**
- *
- */
 public class Control extends Thread {
 
     private final static int NTHREADS = 3;
@@ -19,19 +11,24 @@ public class Control extends Thread {
     private final int NDATA = MAXVALUE / NTHREADS;
 
     private boolean paused = false;
-
-    private PrimeFinderThread pft[];
+    private PrimeFinderThread[] pft;
 
     private Control() {
-        super();
-        this.pft = new PrimeFinderThread[NTHREADS];
+        pft = new PrimeFinderThread[NTHREADS];
 
         int i;
         for (i = 0; i < NTHREADS - 1; i++) {
-            PrimeFinderThread elem = new PrimeFinderThread(i * NDATA, (i + 1) * NDATA);
-            pft[i] = elem;
+            pft[i] = new PrimeFinderThread(
+                    i * NDATA,
+                    (i + 1) * NDATA,
+                    this
+            );
         }
-        pft[i] = new PrimeFinderThread(i * NDATA, MAXVALUE + 1);
+        pft[i] = new PrimeFinderThread(
+                i * NDATA,
+                MAXVALUE + 1,
+                this
+        );
     }
 
     public static Control newControl() {
@@ -40,13 +37,13 @@ public class Control extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < NTHREADS; i++) {
-            pft[i].start();
+        for (PrimeFinderThread t : pft) {
+            t.start();
         }
 
-    Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-    while(areThreadsAlive()){
+        while (areThreadsAlive()) {
             try {
                 Thread.sleep(TMILISECONDS);
             } catch (InterruptedException e) {
@@ -55,9 +52,9 @@ public class Control extends Thread {
 
             pauseSystem();
 
-            System.out.println("\n⏸ Programa pausado");
+            System.out.println("\nPrograma pausado");
             System.out.println("Primos encontrados: " + getTotalPrimes());
-            System.out.println("Presione ENTER para continuar...");
+            System.out.println("Presione ENTER para continuar");
             sc.nextLine();
 
             resumeSystem();
